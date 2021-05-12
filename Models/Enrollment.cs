@@ -9,8 +9,12 @@ namespace MVCUniversity.Models
     public class Enrollment
     {
         public int Id { get; set; }
+
+        [Display(Name = "Student")]
         public int StudentId { get; set; }
         public Student Student { get; set; }
+
+        [Display(Name = "Course")]
         public int CourseId { get; set; }
         public Course Course { get; set; }
 

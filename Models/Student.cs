@@ -41,6 +41,7 @@ namespace MVCUniversity.Models
         [Display(Name = "Education Level")]
         public string EducationLevel { get; set; }
 
+        [Display(Name = "Full Name")]
         public string FullName
         {
             get { return String.Format("{0} {1}", FirstName, LastName); }
