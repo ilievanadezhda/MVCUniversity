@@ -57,7 +57,7 @@
         <dd class="col-sm-10">
             @foreach (var courses in Model.CoursesFirst)
             {
-                <a asp-controller="Teachers" asp-action="Details" asp-route-id="@courses.Id">
+                <a asp-controller="Courses" asp-action="Details" asp-route-id="@courses.Id">
                     @courses.Title
                 </a> <br />
             }
