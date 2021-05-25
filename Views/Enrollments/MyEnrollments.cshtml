@@ -1,7 +1,4 @@
 ﻿@model IEnumerable<MVCUniversity.Models.Enrollment>
-@{
-    ViewData["Title"] = "My Courses";
-}
 <h1>My Courses</h1>
 @{
     var data = ViewBag.Message;
@@ -31,26 +28,26 @@
     <tbody>
         @foreach (var item in Model)
         {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Course.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Semester)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Year)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Grade)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FinishDate)
-            </td>
-            <td>
-                <a asp-action="EditEnrollment" asp-route-id="@item.Id">Edit</a>
-            </td>
-        </tr>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Course.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Semester)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Year)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Grade)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FinishDate)
+                </td>
+                <td>
+                    <a asp-action="EditEnrollmentByStudent" asp-route-id="@item.Id">Edit</a>
+                </td>
+            </tr>
         }
     </tbody>
 </table>

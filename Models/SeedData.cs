@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using MVCUniversity.Areas.Identity.Data;
 using MVCUniversity.Data;
 using System;
 using System.Collections.Generic;
@@ -10,13 +12,63 @@ namespace MVCUniversity.Models
 {
     public class SeedData
     {
+        public static async Task CreateUserRoles(IServiceProvider serviceProvider)
+        {
+            var RoleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var UserManager = serviceProvider.GetRequiredService<UserManager<MVCUniversityUSER>>();
+            IdentityResult roleResult;
+            
+            //Add Admin Role
+            var roleCheck = await RoleManager.RoleExistsAsync("Admin");
+            if (!roleCheck) { roleResult = await RoleManager.CreateAsync(new IdentityRole("Admin")); }
+
+            //Add Admin User
+            MVCUniversityUSER user = await UserManager.FindByEmailAsync("admin@mvcuniversity.com");
+            if (user == null)
+            {
+                var User = new MVCUniversityUSER();
+                User.Email = "admin@mvcuniversity.com";
+                User.UserName = "admin@mvcuniversity.com";
+                string userPWD = "Admin123";
+                IdentityResult chkUser = await UserManager.CreateAsync(User, userPWD);
+                //Add default User to Role Admin
+                if (chkUser.Succeeded) { var result1 = await UserManager.AddToRoleAsync(User, "Admin"); }
+            }
+
+            //Add Teacher Role
+            roleCheck = await RoleManager.RoleExistsAsync("Teacher");
+            if (!roleCheck)
+            {
+                roleResult = await RoleManager.CreateAsync(new IdentityRole("Teacher"));
+            }
+
+            user = await UserManager.FindByEmailAsync("danield@mvcuniversity.com");
+            if (user == null) {
+                var User = new MVCUniversityUSER();
+                User.Email = "danield@mvcuniversity.com";
+                User.UserName = "danield@mvcuniversity.com";
+                User.TeacherId = 1;
+                string userPWD = "Daniel123";
+                IdentityResult chkUser = await UserManager.CreateAsync(User, userPWD);
+                if (chkUser.Succeeded) { var result1 = await UserManager.AddToRoleAsync(User, "Teacher"); }
+            }
+
+            //Add Student Role
+            roleCheck = await RoleManager.RoleExistsAsync("Student");
+            if (!roleCheck)
+            {
+                roleResult = await RoleManager.CreateAsync(new IdentityRole("Student"));
+            }
+        }
+
         public static void Initialize(IServiceProvider serviceProvider)
         {
             using (var context = new MVCUniversityContext(
                 serviceProvider.GetRequiredService<
                     DbContextOptions<MVCUniversityContext>>()))
             {
-                
+                CreateUserRoles(serviceProvider).Wait();
+
                 if (context.Course.Any() || context.Teacher.Any() || context.Student.Any())
                 {
                     return;   

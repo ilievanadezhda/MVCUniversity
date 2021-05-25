@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,7 @@ namespace MVCUniversity.Controllers
         }
 
         // GET: Teachers
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index(string teacherDegree, string teacherAcademicRank, string searchStringName, string searchStringSurname)
         {
             //Ако сакам курсевите да ми ги дава во Index.
@@ -58,13 +60,13 @@ namespace MVCUniversity.Controllers
         }
 
         // GET: Teachers/Details/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-
             var teacher = await _context.Teacher.Include(c => c.CoursesFirst).Include(c => c.CoursesSecond)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (teacher == null)
@@ -76,6 +78,7 @@ namespace MVCUniversity.Controllers
         }
 
         // GET: Teachers/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
@@ -86,6 +89,7 @@ namespace MVCUniversity.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("Id,FirstName,LastName,Degree,AcademicRank,OfficeNumber,HireDate")] Teacher teacher)
         {
             if (ModelState.IsValid)
@@ -98,6 +102,7 @@ namespace MVCUniversity.Controllers
         }
 
         // GET: Teachers/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -118,6 +123,7 @@ namespace MVCUniversity.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,FirstName,LastName,Degree,AcademicRank,OfficeNumber,HireDate")] Teacher teacher)
         {
             if (id != teacher.Id)
@@ -149,6 +155,7 @@ namespace MVCUniversity.Controllers
         }
 
         // GET: Teachers/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -169,6 +176,7 @@ namespace MVCUniversity.Controllers
         // POST: Teachers/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var teacher = await _context.Teacher.FindAsync(id);

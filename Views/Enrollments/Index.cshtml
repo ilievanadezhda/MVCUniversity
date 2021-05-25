@@ -5,10 +5,10 @@
 }
 
 <h1>Index</h1>
-
 <p>
-    <a asp-action="EnrollStudents">Enroll Students</a> | <a asp-action="UnEnrollStudents">Unenroll Students</a>
+    <a asp-controller="Enrollments" asp-action="EnrollStudents">Enroll Students</a>
 </p>
+
 <form asp-controller="Enrollments" asp-action="Index" method="get">
     <p>
         Course: <input type="text" asp-for="SearchStringCourse" />

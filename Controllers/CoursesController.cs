@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,7 @@ namespace MVCUniversity.Controllers
         }
 
         // GET: Courses
+        [Authorize(Roles = "Admin, Teacher")]
         public async Task<IActionResult> Index(int courseSemester, string courseProgramme, string searchString)
         {
             //var mVCUniversityContext = _context.Course.Include(c => c.FirstTeacher).Include(c => c.SecondTeacher).Include(m => m.Students).ThenInclude(m => m.Student);
@@ -52,6 +54,7 @@ namespace MVCUniversity.Controllers
         }
 
         // GET: Courses/Details/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -72,6 +75,7 @@ namespace MVCUniversity.Controllers
         }
 
         // GET: Courses/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewData["FirstTeacherId"] = new SelectList(_context.Set<Teacher>(), "Id", "FullName");
@@ -84,6 +88,7 @@ namespace MVCUniversity.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("Id,Title,Credits,Semester,Programme,EducationLevel,FirstTeacherId,SecondTeacherId")] Course course)
         {
             if (ModelState.IsValid)
@@ -98,6 +103,7 @@ namespace MVCUniversity.Controllers
         }
 
         // GET: Courses/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -131,6 +137,7 @@ namespace MVCUniversity.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, CourseStudentEditViewModel viewmodel)
         {
             if (id != viewmodel.Course.Id)
@@ -206,6 +213,7 @@ namespace MVCUniversity.Controllers
 
 
         // GET: Courses/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -228,6 +236,7 @@ namespace MVCUniversity.Controllers
         // POST: Courses/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var course = await _context.Course.FindAsync(id);
@@ -239,6 +248,25 @@ namespace MVCUniversity.Controllers
         private bool CourseExists(int id)
         {
             return _context.Course.Any(e => e.Id == id);
+        }
+
+        //My Courses
+        [Authorize(Roles = "Teacher")]
+        public async Task<IActionResult> CoursesByTeacher(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var teacher = await _context.Teacher.FirstOrDefaultAsync(m => m.Id == id);
+            ViewBag.Message = teacher;
+
+            if (teacher == null)
+            {
+                return NotFound();
+            }
+            var mVCUniversityContext = _context.Course.Where(m => (m.FirstTeacherId == id) || (m.SecondTeacherId == id)).Include(c => c.FirstTeacher).Include(c => c.SecondTeacher); //.Include(m => m.Students).ThenInclude(m => m.Student);
+            return View(await mVCUniversityContext.ToListAsync());
         }
     }
 }
