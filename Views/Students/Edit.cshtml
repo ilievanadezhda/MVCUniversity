@@ -10,7 +10,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form enctype="multipart/form-data" asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
@@ -49,6 +49,23 @@
                 <span asp-validation-for="EducationLevel" class="text-danger"></span>
             </div>
             <div class="form-group">
+                @if (Model.profilePicture == null)
+                {
+                    <label class="control-label">Picture</label>
+                    <input type="file" name="imageUrl" />
+                }
+                else
+                {
+                    <label>Chosen picture:</label>
+                    <img src="~/images/@Model.profilePicture"
+                         height="100" width="100"
+                         class="rounded-circle"
+                         asp-append-version="true" />
+                    <br />
+                    <input type="file" name="imageUrl" />
+                }
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
@@ -60,5 +77,10 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script type="text/javascript">
+        $(".custom-file-input").on("change", function () {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+        });
+    </script>
 }

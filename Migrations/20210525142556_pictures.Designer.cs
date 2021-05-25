@@ -4,14 +4,16 @@ using MVCUniversity.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MVCUniversity.Migrations
 {
     [DbContext(typeof(MVCUniversityContext))]
-    partial class MVCUniversityContextModelSnapshot : ModelSnapshot
+    [Migration("20210525142556_pictures")]
+    partial class pictures
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -220,9 +222,6 @@ namespace MVCUniversity.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(10)")
                         .HasMaxLength(10);
-
-                    b.Property<string>("profilePicture")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

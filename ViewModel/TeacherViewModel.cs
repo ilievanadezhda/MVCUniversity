@@ -1,12 +1,14 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using MVCUniversity.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MVCUniversity.Models
+namespace MVCUniversity.ViewModel
 {
-    public class Teacher
+    public class TeacherViewModel
     {
         public int Id { get; set; }
 
@@ -40,7 +42,6 @@ namespace MVCUniversity.Models
         {
             get { return String.Format("{0} {1}", FirstName, LastName); }
         }
-
         [Display(Name = "Courses First")]
         public ICollection<Course> CoursesFirst { get; set; }
 
@@ -48,7 +49,6 @@ namespace MVCUniversity.Models
         public ICollection<Course> CoursesSecond { get; set; }
 
         [Display(Name = "Profile Picture")]
-        public string? profilePicture { get; set; }
-
+        public IFormFile? Picture { get; set; }
     }
 }

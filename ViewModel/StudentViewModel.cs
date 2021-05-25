@@ -1,14 +1,16 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using MVCUniversity.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MVCUniversity.Models
+namespace MVCUniversity.ViewModel
 {
-    public class Student
+    public class StudentViewModel
     {
+
         public int Id { get; set; }
 
         [Required]
@@ -27,19 +29,22 @@ namespace MVCUniversity.Models
         public string LastName { get; set; }
 
         [DataType(DataType.Date)]
-        [Display(Name = "Enrollment Date")] 
+        [Display(Name = "Enrollment Date")]
         public DateTime? EnrollmentDate { get; set; }
 
         [Display(Name = "Acquired Credits")]
         public int? AcquiredCredits { get; set; }
 
-        [Range(1,8)]
+        [Range(1, 8)]
         [Display(Name = "Current Semestar")]
         public int? CurrentSemester { get; set; }
 
         [StringLength(25)]
         [Display(Name = "Education Level")]
         public string EducationLevel { get; set; }
+
+        [Display(Name = "Profile Picture")]
+        public IFormFile? Picture { get; set; }
 
         [Display(Name = "Full Name")]
         public string FullName
@@ -48,9 +53,6 @@ namespace MVCUniversity.Models
         }
 
         public ICollection<Enrollment> Courses { get; set; }
-
-        [Display(Name = "Profile Picture")]
-        public string? profilePicture { get; set; }
 
     }
 }

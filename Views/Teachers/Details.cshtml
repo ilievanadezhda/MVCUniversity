@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Details";
+    var photoPath = "~/images/" + (Model.profilePicture ?? "nopicture.jpg");
 }
 
 <h1>Details</h1>
@@ -9,6 +10,10 @@
 <div>
     <h4>Teacher</h4>
     <hr />
+    <img src="@photoPath"
+         class="rounded-circle"         
+         height="200" width="200"
+         asp-append-version="true" />
     <dl class="row">
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.FirstName)

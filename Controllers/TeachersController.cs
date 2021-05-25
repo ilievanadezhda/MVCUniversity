@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -15,10 +18,12 @@ namespace MVCUniversity.Controllers
     public class TeachersController : Controller
     {
         private readonly MVCUniversityContext _context;
+        private readonly IHostingEnvironment webHostEnvironment;
 
-        public TeachersController(MVCUniversityContext context)
+        public TeachersController(MVCUniversityContext context, IHostingEnvironment hostingEnviroment)
         {
             _context = context;
+            webHostEnvironment = hostingEnviroment;
         }
 
         // GET: Teachers
@@ -90,15 +95,45 @@ namespace MVCUniversity.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create([Bind("Id,FirstName,LastName,Degree,AcademicRank,OfficeNumber,HireDate")] Teacher teacher)
+        public async Task<IActionResult> Create(TeacherViewModel model)
         {
             if (ModelState.IsValid)
             {
+                string uniqueFileName = UploadedFile(model);
+
+                Teacher teacher = new Teacher
+                {
+                    Id = model.Id,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    Degree = model.Degree,
+                    AcademicRank = model.AcademicRank,
+                    OfficeNumber = model.OfficeNumber,
+                    HireDate = model.HireDate,
+                    profilePicture = uniqueFileName
+                };
                 _context.Add(teacher);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(teacher);
+            return View();
+        }
+
+        private string UploadedFile(TeacherViewModel model)
+        {
+            string uniqueFileName = null;
+
+            if (model.Picture != null)
+            {
+                string uploadsFolder = Path.Combine(webHostEnvironment.WebRootPath, "images");
+                uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(model.Picture.FileName);
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    model.Picture.CopyTo(fileStream);
+                }
+            }
+            return uniqueFileName;
         }
 
         // GET: Teachers/Edit/5
@@ -124,13 +159,14 @@ namespace MVCUniversity.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,FirstName,LastName,Degree,AcademicRank,OfficeNumber,HireDate")] Teacher teacher)
+        public async Task<IActionResult> Edit(int id, IFormFile imageUrl, [Bind("Id,FirstName,LastName,Degree,AcademicRank,OfficeNumber,HireDate")] Teacher teacher)
         {
             if (id != teacher.Id)
             {
                 return NotFound();
             }
-
+            TeachersController uploadImage = new TeachersController(_context, webHostEnvironment);
+            teacher.profilePicture = uploadImage.UploadedFile(imageUrl);
             if (ModelState.IsValid)
             {
                 try
@@ -188,6 +224,23 @@ namespace MVCUniversity.Controllers
         private bool TeacherExists(int id)
         {
             return _context.Teacher.Any(e => e.Id == id);
+        }
+
+        //Overloaded function UploadedFile for Edit
+        public string UploadedFile(IFormFile file)
+        {
+            string uniqueFileName = null;
+            if (file != null)
+            {
+                string uploadsFolder = Path.Combine(webHostEnvironment.WebRootPath, "images");
+                uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(file.FileName);
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    file.CopyTo(fileStream);
+                }
+            }
+            return uniqueFileName;
         }
     }
 }
